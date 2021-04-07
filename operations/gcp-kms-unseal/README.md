@@ -4,6 +4,24 @@ These assets are provided to perform the tasks described in the [Auto-unseal wit
 KMS](https://learn.hashicorp.com/vault/operations/autounseal-gcp-kms) guide.
 
 ---
+## Important note about Terraform Destroy
+
+Google KMS keyring or keys cannot be destroyed. Therefore once you run terraform destroy, the key is marked as Disabled. After that, the keyring and key becomes unusable. Hence, for every terraform apply, please provide an updated key ring name.
+
+Note that the key version must be explicitly destroyed so that Google does not charge for it.
+```
+gcloud kms keys versions destroy 1 \
+    --key vault-unseal \
+    --keyring "gcp-kms-unseal1" \
+    --location global
+```
+
+## To create/destroy Vault VM only
+Use the following command to persist the GCP KMS keyring and key while only repaving the Vault VM
+```
+terraform destroy -target google_compute_instance.vault
+```
+
 
 ## Steps
 
